@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import type { Variants } from "framer-motion"
 import { CryptoCard } from "./crypto-card"
 import type { Cryptocurrency } from "@/types/crypto"
 
@@ -11,7 +12,7 @@ interface CryptoGridProps {
 }
 
 export function CryptoGrid({ cryptos, favorites, onToggleFavorite }: CryptoGridProps) {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -22,7 +23,7 @@ export function CryptoGrid({ cryptos, favorites, onToggleFavorite }: CryptoGridP
     },
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -40,10 +41,14 @@ export function CryptoGrid({ cryptos, favorites, onToggleFavorite }: CryptoGridP
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      className="flex flex-wrap justify-center gap-6"
     >
       {cryptos.map((crypto) => (
-        <motion.div key={crypto.id} variants={itemVariants}>
+        <motion.div 
+          key={crypto.id} 
+          variants={itemVariants}
+          className="w-full max-w-[300px]" 
+        >
           <CryptoCard crypto={crypto} isFavorite={favorites.includes(crypto.id)} onToggleFavorite={onToggleFavorite} />
         </motion.div>
       ))}

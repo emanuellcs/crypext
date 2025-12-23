@@ -24,10 +24,38 @@ export default function CoinPage() {
     const loadCoinDetail = async () => {
       if (!params.id || typeof params.id !== "string") return
 
+      const cacheKey = `coinDetail:${params.id}`
+      const cacheTsKey = `coinDetailTs:${params.id}`
+      const FIVE_MIN = 5 * 60 * 1000
+
       try {
         setLoading(true)
+
+        const raw = localStorage.getItem(cacheKey)
+        const ts = localStorage.getItem(cacheTsKey)
+
+        if (raw && ts) {
+          const age = Date.now() - Number(ts)
+          if (!isNaN(age) && age < FIVE_MIN) {
+            try {
+              const parsed = JSON.parse(raw)
+              setCoin(parsed)
+              setLoading(false)
+              return
+            } catch (parseErr) {
+              console.warn("Failed to parse cached coin detail, refetching", parseErr)
+            }
+          }
+        }
+
         const data = await fetchCoinDetail(params.id)
         setCoin(data)
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(data))
+          localStorage.setItem(cacheTsKey, String(Date.now()))
+        } catch (err) {
+          // ignore storage failures
+        }
       } catch (error) {
         console.error("Error fetching coin detail:", error)
       } finally {
@@ -110,7 +138,10 @@ export default function CoinPage() {
               <Button
                 variant={isFavorite ? "default" : "outline"}
                 onClick={() => toggleFavorite(coin.id)}
-                className="hover:bg-zinc-800/50"
+                className={isFavorite 
+                  ? "text-zinc-900 hover:bg-zinc-200 border-zinc-700 transition-colors"
+                  : "text-zinc-200 hover:text-white hover:bg-zinc-800 border-zinc-700 transition-colors"
+                }
               >
                 <Star className={`w-4 h-4 mr-2 ${isFavorite ? "fill-current" : ""}`} />
                 {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
