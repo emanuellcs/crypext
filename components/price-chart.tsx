@@ -75,7 +75,7 @@ export function PriceChart({ coinId }: PriceChartProps) {
                 color: "#e4e4e7",
                 boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
               }}
-              formatter={(value: number) => [`$${value.toFixed(2)}`, "Price"]}
+              formatter={(value: number | undefined) => [`$${(value ?? 0).toFixed(2)}`, "Price"]}
               labelStyle={{ color: "#a1a1aa" }}
             />
             <Line

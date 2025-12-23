@@ -44,3 +44,13 @@ export async function fetchChartData(coinId: string, days: string): Promise<Char
     date: new Date(timestamp).toLocaleDateString(),
   }))
 }
+
+export async function fetchCoinList(): Promise<{ id: string; symbol: string; name: string }[]> {
+  const response = await fetch(`${BASE_URL}/coins/list`, { next: { revalidate: 60 * 60 * 24 } })
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch coin list")
+  }
+
+  return response.json()
+}
